@@ -1,22 +1,43 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import * as faceapi from 'face-api.js';
 
 interface CensorCanvasProps {
     imageFile: File | null;
 }
 
+export interface CensorCanvasHandle {
+    download: () => void;
+    isReady: boolean;
+}
+
 // Album cover dimensions and regions (based on 500x500 original)
 const ALBUM_SIZE = 500;
-const HEADER_HEIGHT = 72;  // AC/DC logo area
-const FOOTER_HEIGHT = 52;  // "Dirty Deeds Done Dirt Cheap" text area
+const HEADER_HEIGHT = 91;  // AC/DC logo area + pink border
+const FOOTER_HEIGHT = 80;  // Pink border + "Dirty Deeds Done Dirt Cheap" text area
 const PHOTO_HEIGHT = ALBUM_SIZE - HEADER_HEIGHT - FOOTER_HEIGHT;
 
-export const CensorCanvas: React.FC<CensorCanvasProps> = ({ imageFile }) => {
+export const CensorCanvas = forwardRef<CensorCanvasHandle, CensorCanvasProps>(({ imageFile }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const tempCanvasRef = useRef<HTMLCanvasElement>(null);
     const [isModelsLoaded, setIsModelsLoaded] = useState(false);
     const [albumCover, setAlbumCover] = useState<HTMLImageElement | null>(null);
     const [status, setStatus] = useState('Loading models...');
+    const [isReady, setIsReady] = useState(false);
+
+    const handleDownload = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const link = document.createElement('a');
+        link.download = 'dirty-deeds.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    };
+
+    useImperativeHandle(ref, () => ({
+        download: handleDownload,
+        isReady
+    }), [isReady]);
 
     // Load models and album cover
     useEffect(() => {
@@ -46,6 +67,7 @@ export const CensorCanvas: React.FC<CensorCanvasProps> = ({ imageFile }) => {
 
         const processImage = async () => {
             setStatus('Processing...');
+            setIsReady(false);
 
             const userImg = await faceapi.bufferToImage(imageFile);
             const canvas = canvasRef.current!;
@@ -126,6 +148,7 @@ export const CensorCanvas: React.FC<CensorCanvasProps> = ({ imageFile }) => {
             );
 
             setStatus(resizedDetections.length > 0 ? 'Done' : 'No faces detected');
+            setIsReady(true);
         };
 
         processImage();
@@ -140,4 +163,4 @@ export const CensorCanvas: React.FC<CensorCanvasProps> = ({ imageFile }) => {
             </div>
         </div>
     );
-};
+});

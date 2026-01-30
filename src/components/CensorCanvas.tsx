@@ -8,7 +8,6 @@ interface CensorCanvasProps {
 export const CensorCanvas: React.FC<CensorCanvasProps> = ({ imageFile }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isModelsLoaded, setIsModelsLoaded] = useState(false);
-    const [isProcessing, setIsProcessing] = useState(false);
     const [status, setStatus] = useState('Loading models...');
 
     useEffect(() => {
@@ -30,7 +29,6 @@ export const CensorCanvas: React.FC<CensorCanvasProps> = ({ imageFile }) => {
         if (!imageFile || !isModelsLoaded || !canvasRef.current) return;
 
         const processImage = async () => {
-            setIsProcessing(true);
             setStatus('Processing...');
 
             const img = await faceapi.bufferToImage(imageFile);
@@ -87,7 +85,6 @@ export const CensorCanvas: React.FC<CensorCanvasProps> = ({ imageFile }) => {
                 ctx.restore();
             });
 
-            setIsProcessing(false);
             setStatus(resizedDetections.length > 0 ? 'Done' : 'No faces detected');
         };
 

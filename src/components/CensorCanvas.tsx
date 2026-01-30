@@ -156,7 +156,11 @@ export const CensorCanvas = forwardRef<CensorCanvasHandle, CensorCanvasProps>(({
 
     return (
         <div>
-            <h3 style={{ marginBottom: '1rem', color: '#666' }}>{status}</h3>
+            {status && (
+                <h3 className={`status-text ${status === 'Done' ? 'fade-out' : ''}`}>
+                    {status}
+                </h3>
+            )}
             <div className="canvas-container">
                 <canvas ref={canvasRef} />
                 <canvas ref={tempCanvasRef} style={{ display: 'none' }} />

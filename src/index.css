@@ -131,3 +131,29 @@ canvas {
   display: block;
   max-width: 100%;
 }
+
+.status-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  background: linear-gradient(to right, #fff, #999);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+  font-style: italic;
+}
+
+.status-text.fade-out {
+  animation: fadeOut 1.5s ease-out forwards;
+  animation-delay: 0.5s;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

@@ -1,0 +1,10 @@
+name: dirty-deeds
+region: nyc
+static_sites:
+  - name: web
+    github:
+      repo: mofongo/dirty-deeds
+      branch: main
+      deploy_on_push: true
+    build_command: npm install && npm run build
+    output_dir: dist
